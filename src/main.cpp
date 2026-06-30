@@ -14,6 +14,7 @@
 #define PLAY_BUTTON_PIN 26
 #define NEXT_BUTTON_PIN 27
 #define PREV_BUTTON_PIN 25
+#define POTENTIOMETER_PIN 35
 
 
 #define SPOTIFY_MARKET "PT"
@@ -67,6 +68,8 @@ void setup()
     pinMode(PLAY_BUTTON_PIN, INPUT_PULLUP);
     pinMode(NEXT_BUTTON_PIN, INPUT_PULLUP);
     pinMode(PREV_BUTTON_PIN, INPUT_PULLUP);
+    pinMode(POTENTIOMETER_PIN, INPUT);
+
 
     attachInterrupt(digitalPinToInterrupt(PLAY_BUTTON_PIN), playButtonISR, FALLING);
     attachInterrupt(digitalPinToInterrupt(NEXT_BUTTON_PIN), nextButtonISR, FALLING);
@@ -101,7 +104,7 @@ void setup()
         "Play Track",
         10240,
         NULL,
-        3,
+        4,
         NULL,
         1
     );
@@ -110,16 +113,24 @@ void setup()
         "Previous Track",
         10240,
         NULL,
-        4,
+        3,
+        NULL,
+        1
+    );
+    xTaskCreatePinnedToCore(
+        readVolume,
+        "Set spotify volume",
+        10240,
+        NULL,
+        5,
         NULL,
         1
     );
 
-
 }
 
 
-
+    
 void loop()
 {
     

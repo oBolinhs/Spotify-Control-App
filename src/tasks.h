@@ -26,3 +26,4 @@ void displayMusic(void *parameter);
 void nextTrack(void *parameter);
 void previousTrack(void *parameter);
 void playTrack(void *parameter);
+void readVolume(void *parameter);

@@ -1,5 +1,5 @@
 #include "tasks.h"
-#define POTENTIOMETER_PIN 17
+#define POTENTIOMETER_PIN 35
 #define DEBOUNCE_DELAY 200
 
 volatile uint32_t lastInterruptTimePlay = 0;
@@ -126,16 +126,20 @@ void playTrack(void *parameter) {
 }
 
 void readVolume(void *parameter) {
-    uint16_t potRead = 0;
-    uint16_t lastRead = 0;
+    uint16_t potRead = 2048;
+    uint16_t lastRead = analogRead(POTENTIOMETER_PIN);
     while(true) {
+        
         if(xSemaphoreTake(spotifyMutex, portMAX_DELAY)) {
             potRead = analogRead(POTENTIOMETER_PIN);
             //only changes volume if there was a significant alteration on the potentiometer
-            if(potRead/lastRead < 0.6 || potRead/lastRead > 1.4) {
-                spotify.setVolume(potRead/4096*100);
-                lastRead = potRead;
+            if(abs(potRead - lastRead) > 100) {
+                spotify.setVolume((potRead*100)/4096);
+                lastRead = potRead+1;
+                
             }
+            xSemaphoreGive(spotifyMutex);
         }
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
